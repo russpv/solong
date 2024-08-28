@@ -77,15 +77,16 @@ int		get_line(int fd, char **buf)
 {
 	int 	i;
 	int 	bytes;
+	char	ch;
 
 	*buf = malloc(sizeof(char) * BUFSZ);
 	if (!(*buf))
 		return (perror("Malloc error"), FAILURE);
 	bytes = 0;
 	i = -1;
-	while (++i < BUFSZ - 1)
+	while (++i < BUFSZ - 2)
 	{
-		bytes += read(fd, *buf + i, 1);
+		bytes += read(fd, &ch, 1);
 		if (-1 == bytes)
 		{
 			free(*buf);
@@ -93,40 +94,20 @@ int		get_line(int fd, char **buf)
 		}
 		if (0 == bytes)
 		{
-			free(*buf);
+			if (0 == i)
+			{
+				free(*buf);
+				return (0);
+			}
 			break ;
 		}
-		if ((*buf)[i] == '\n' || (*buf)[i] == '\0' || (*buf)[i] == '\r')
+		(*buf)[i] = ch;
+		if (ch == '\n' || ch == '\0' || ch == '\r')
 			break ;
 	}
 	(*buf)[++i] = 0;
 	return (bytes);
 }
-
-/* Removes newline from map grid */
-/*
-static char	**_trimstr(char *str, char d)
-{
-	char **newarr;
-	char *tmp;	
-	int i;
-
-	newarr = ft_split(str, d);
-	if (!newarr)
-		return (NULL);
-	i = 0;
-	while (newarr[i])
-	{
-		tmp = ft_strtrim(newarr[i], "\n\0 ");
-		if (!tmp)
-			return (NULL);
-		free(newarr[i]);
-		newarr[i] = tmp;
-		i++;
-	}
-
-	return (newarr);
-}*/
 
 /* Takes .ber map file and reads it into a grid */
 void	parse_args(int argc, char **argv, t_app *app)

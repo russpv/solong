@@ -3,11 +3,43 @@
 int		render_sprite(t_app*, t_img, int , int);
 int		render_map(t_app*);
 int		render_player(int, t_app*);
+int		render_stats(t_app*, const char *);
 void	get_sprite(t_app *, int, int);
 
 int	render_sprite(t_app *app, t_img sprite, int row, int col)
 {
 	return (mlx_put_image_to_window(app->mlx_ptr, app->win_ptr, sprite.xpm_ptr, col * SCALE, row * SCALE));
+}
+
+int	render_map(t_app *app)
+{
+	int col;
+	int row;
+
+	col = -1;
+	mlx_clear_window(app->mlx_ptr, app->win_ptr);
+	while (++col < app->height)
+	{
+		row = -1;
+		while (++row < app->width) {
+			get_sprite(app, row, col); }
+	}
+	if (render_stats(app, "Player Moves: ") == FAILURE)
+		return (FAILURE);
+	return (SUCCESS);
+}
+
+int	render_stats(t_app *app, const char *pre)
+{
+	const char *suf = ft_itoa(app->moves);
+	const char *str = ft_strjoin(pre, suf);
+	const int rgb = 201 << 16 | 62 << 8 | 62;
+	int result;
+
+	free((void *)suf);
+	result = mlx_string_put(app->mlx_ptr, app->win_ptr, STATSX, STATSY, rgb, (char *)str);
+   	free((void *)str);
+	return (result);
 }
 
 void	get_sprite(t_app *app, int col, int row)
@@ -36,35 +68,5 @@ void	get_sprite(t_app *app, int col, int row)
 		render_sprite(app, app->player_up, app->player.row, app->player.col);
 	else if (code == P_DOWN)
 		render_sprite(app, app->player_down, app->player.row, app->player.col);
-
 }
 
-int	render_map(t_app *app)
-{
-	int col;
-	int row;
-
-	col = -1;
-	mlx_clear_window(app->mlx_ptr, app->win_ptr);
-	while (++col < app->height) // traverse rows
-	{
-		row = -1;
-		while (++row < app->width) { //traverse columns
-			ft_printf("doing_%dx%d|", row, col);
-			get_sprite(app, row, col); }
-	}
-	return (SUCCESS);
-}
-/*
-int	render_player(int direction, t_app *app)
-{
-	if (direction == up)
-		render_sprite(app, app->player_up, app->player.row, app->player.col);
-	else if (direction == down)
-		render_sprite(app, app->player_down, app->player.row, app->player.col);
-	else if (direction == left)
-		render_sprite(app, app->player_left, app->player.row, app->player.col);
-	else
-		render_sprite(app, app->player_right, app->player.row, app->player.col);
-	return (SUCCESS);
-}*/

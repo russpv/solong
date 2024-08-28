@@ -1,7 +1,6 @@
 #include "solong.h"
 
 void	err(char *msg, t_app *app);
-void	_cleanup(t_app*);
 void	print_map(t_app*);
 size_t	arrlen(char **);
 
@@ -32,17 +31,10 @@ void	print_map(t_app *app)
 
 void	err(char *msg, t_app *app)
 {
-	// TODO: custom "Error: msg" printingi
 	errno = EINVAL;
 	perror(msg);
-	_cleanup(app);
+	cleanup(app);
 	exit(1);
-}
-
-void	_cleanup(t_app *app)
-{
-	if (app->map_grid)
-		free_map_grid(app);
 }
 
 void	init_struct(t_app *app)
@@ -54,5 +46,6 @@ void	init_struct(t_app *app)
 	app->width = 0;
 	app->height = 0;
 	app->moves = 0;
+	app->loots = 0;
 }
 

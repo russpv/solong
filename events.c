@@ -1,8 +1,9 @@
 #include "solong.h"
 
 int	on_keypress(int, void*);
-int	on_destroy(void*);
+int	on_destroy(void*, int);
 int	move_player(char, int, int, t_app*);
+static int	_check_valid_move(int, int, t_app *);
 
 int on_keypress(int keycode, void *param)
 {
@@ -16,48 +17,52 @@ int on_keypress(int keycode, void *param)
 	else if (keycode == ARROW_RIGHT_KEY)
 		move_player(P_RIGHT, app->player.row, app->player.col + 1, app);
 	else if (keycode == ESCAPE)
-		on_destroy(param);
+		on_destroy(param, FAILURE);
 	else
-		printf("Pressed key: %d\\n", keycode);
-	fflush(stdout);
+		;
 	return (0);
 }
 
-int on_destroy(void *param)
+int on_destroy(void *param, int cond)
 {
 	t_app *app = (t_app *)param;
-	mlx_destroy_window(app->mlx_ptr, app->win_ptr);
-	mlx_destroy_display(app->mlx_ptr);
+	if (cond == SUCCESS)
+		ft_printf("YOU WIN!\n");
 	cleanup(app);
-	// TODO call proper cleanup function
 	exit(EXIT_SUCCESS);
 	return (0);
 }
 
-int	check_valid_move(int row, int col, t_app *app)
+static int	_check_valid_move(int row, int col, t_app *app)
 {
 	const char ch = app->map_grid[row][col]; 
 	if ((row < 0 || row >= app->height) || (col < 0 || col >= app->width))
-		return (1);
+		return (FAILURE);
 	if (ch == SPACE || ch == LOOT || ch == EXIT)
-		return (0);
-	return (1);
+		return (SUCCESS);
+	return (FAILURE);
 }
 
-/* Checks for valid move */
 int	move_player(char direction, int newrow, int newcol, t_app *app)
 {
-	const char ch = app->map_grid[newrow][newcol];
-
-	app->map_grid[app->player.row][app->player.col] = SPACE;
-	if (check_valid_move(newrow, newcol, app) == 0)
+	const char tile_dest = app->map_grid[newrow][newcol];
+	char * const tile_orig = &app->map_grid[app->player.row][app->player.col];
+	
+	if (_check_valid_move(newrow, newcol, app) == SUCCESS)
 	{
+		if (app->player.row == app->exit_pos.row && app->player.col == app->exit_pos.col)
+			*tile_orig = EXIT;
+		else
+			*tile_orig = SPACE;
 		app->player.row = newrow;
 		app->player.col = newcol;
+		if (tile_dest == LOOT)
+			app->loots--;
+		app->moves++;
 	}
 	app->map_grid[app->player.row][app->player.col] = direction;
 	render_map(app);
-	if (ch == EXIT)
-		on_destroy(app);
+	if (tile_dest == EXIT && app->loots == 0)
+		on_destroy(app, SUCCESS);
 	return (SUCCESS);
 }

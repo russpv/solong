@@ -45,6 +45,9 @@
 #define P_LEFT 'L'
 #define P_RIGHT 'R'
 
+#define STATSX 10
+#define STATSY 10
+
 enum e_moves {
 	up,
 	down,
@@ -83,17 +86,18 @@ typedef struct s_app
 	t_img	player_up;
 	t_img	player_down;
 	t_pos	player;
+	t_pos	exit_pos;
 	int		moves;
+	int		loots;
 }	t_app;
 
 
 /* events */
-int		on_destroy(void *);
+int		on_destroy(void *, int);
 int		on_keypress(int, void*);
 
 /* parse_args */
 void	parse_args(int argc, char **argv, t_app *app);
-int		get_line(int fd, char **buf);
 
 /* init_app */
 t_img	new_sprite(void *, char *);
@@ -103,13 +107,13 @@ void	init_app(t_app *);
 /* render_map */
 int		render_map(t_app*);
 int		render_player(int, t_app*);
-void	scale_sprite();
 
 /* frees */
 void	free_map_grid(t_app *app);
+void	cleanup(t_app *);
 
 /* utils */
 void	init_struct();
 void	err(char*, t_app*);
-void	print_map(t_app*);
 size_t	arrlen(char **);
+
