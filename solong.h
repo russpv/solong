@@ -12,6 +12,7 @@
 #define TILEW 48
 #define TILEH 48
 #define SPRITEDIR "assets/"
+#define EXTENSION ".ber"
 #define RED "\033[91m"
 #define DEFAULT "\033[0m"
 #define BUFSZ 1024
@@ -33,6 +34,8 @@
 #define LOOT 'C'
 #define EXIT 'E'
 #define START 'P'
+#define VISITED 'X'
+#define NOTVISI '.'
 
 #define ARROW_UP_KEY 65362  
 #define ARROW_DOWN_KEY 65364
@@ -75,6 +78,7 @@ typedef struct s_app
 	void *img_ptr;
 
 	char	**map_grid;
+	char	**test_map;
 	int	width;
 	int	height;
 
@@ -85,10 +89,15 @@ typedef struct s_app
 	t_img	player_left;
 	t_img	player_up;
 	t_img	player_down;
+
 	t_pos	player;
 	t_pos	exit_pos;
+	t_pos	start_pos;
+	t_pos	*loots_pos;
 	int		moves;
 	int		loots;
+	int		exits;
+	int		starts;
 }	t_app;
 
 
@@ -104,12 +113,15 @@ t_img	new_sprite(void *, char *);
 void	init_sprites(t_app *);
 void	init_app(t_app *);
 
+/* check paths */
+int		check_paths(t_app*);
+
 /* render_map */
 int		render_map(t_app*);
 int		render_player(int, t_app*);
 
 /* frees */
-void	free_map_grid(t_app *app);
+void	free_map_grid(char**);
 void	cleanup(t_app *);
 
 /* utils */

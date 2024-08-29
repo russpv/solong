@@ -7,6 +7,7 @@ int main(int argc, char **argv)
 	init_struct(&app);
 	parse_args(argc, argv, &app);
 	init_app(&app);
+	check_paths(&app);
 	app.win_ptr = mlx_new_window(app.mlx_ptr, app.width * SCALE, \
 			app.height * SCALE, "A MinilibX Game");
 	if (!app.win_ptr)

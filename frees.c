@@ -1,7 +1,7 @@
 #include "solong.h"
 
 void	cleanup(t_app *);
-void	free_map_grid(t_app *);
+void	free_map_grid(char **);
 
 void	_free_sprites(t_app *app)
 {
@@ -16,18 +16,19 @@ void	_free_sprites(t_app *app)
 
 void	cleanup(t_app *app)
 {
-	free_map_grid(app);
+	free_map_grid(app->map_grid);
+	free_map_grid(app->test_map);
 	_free_sprites(app);
 	mlx_destroy_window(app->mlx_ptr, app->win_ptr);
 	mlx_destroy_display(app->mlx_ptr);
 	free(app->mlx_ptr);
 }
 
-void	free_map_grid(t_app *app)
+void	free_map_grid(char **arr)
 {
 	char **ptr;
 
-	ptr = app->map_grid;
+	ptr = arr;
 	if (ptr)
 	{
 		while (*ptr)
@@ -36,6 +37,6 @@ void	free_map_grid(t_app *app)
 			ptr++;
 		}
 	}
-	free(app->map_grid);
+	free(arr);
 }
 

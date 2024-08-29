@@ -1,18 +1,10 @@
 #include "solong.h"
 
-# define EXTENSION ".ber"
-
 void	parse_args(int argc, char **argv, t_app *app);
 int		_checkarg(const char *);
-void	get_map(char*, int, t_app*);
-void	_check_map_valid(t_app*);
-//static char	**_trimstr(char *, char );
+void	get_map(char*, int, t_app *);
+int		get_line(int, char **);
 
-void	_check_map_valid(t_app *app)
-{
-	// TODO
-	(void)app;
-}
 /*
 static void print_map_content(const char *map) {
     for (size_t i = 0; map[i] != '\0'; i++) {
@@ -27,7 +19,7 @@ int		_checkarg(const char *filename)
 	const size_t len = ft_strlen(filename);
 
 	if (len < ft_strlen(EXTENSION)) 
-		return (perror("Argument must be a .ber map file"), FAILURE);
+		return (perror("Argument must be a "EXTENSION" map file"), FAILURE);
 	if (ft_strncmp(&filename[len - 4], EXTENSION, 4) != 0)
 		return (perror("Argument must be a .ber map file"), FAILURE);
 	if (access(filename, F_OK) != 0)
@@ -40,7 +32,7 @@ int		_checkarg(const char *filename)
 /* Read input file into buffer */
 void	get_map(char *tmp, int fd, t_app *app)
 {
-	int bytes;
+	int 	bytes;
 	char	*buf;
 	char	*tmp2;
 

@@ -1,22 +1,47 @@
 #include "solong.h"
 
-t_img	new_sprite(void *, char *);
-void	init_sprites(t_app *);
-void	init_app(t_app *);
-static int	_load_features(t_app *);
+t_img	new_sprite(void*, char*);
+void	init_sprites(t_app*);
+void	init_app(t_app*);
+
+static int	_load_features(t_app*);
+static void _store_pos(t_pos*, int, int, int*);
+static void _store_loot_pos(t_app*, int, int, int*);
+
+/* realloc position array of structs */
+static void	_store_loot_pos(t_app *app, int row, int col, int *loots)
+{
+	t_pos *ptr;
+	int i;
+
+	(*loots)++;
+	ptr = malloc(sizeof(t_pos) * (*loots));
+	if (!ptr)
+		err("Malloc error", app);
+	i = -1;
+	while (++i < *loots - 1)
+		ft_memcpy(&ptr[i], &app->loots_pos[i], sizeof(t_pos));
+	ptr[*loots - 1].row = row;
+	ptr[*loots - 1].col = col;
+	free(app->loots_pos);
+	app->loots_pos = ptr;
+}
+
+static void	_store_pos(t_pos *pos, int row, int col, int *counter)
+{
+	pos->row = row;
+	pos->col = col;
+	(*counter)++;
+}
 
 static int	_load_features(t_app *app)
 {
 	int i;
 	int j;
 	int ch;
-	int exits;
-	int starts;
 
 	if (!app->map_grid)
 		return (FAILURE);
-	starts = 0;
-	exits = 0;
 	i = 0;
 	while (app->map_grid[i])
 	{
@@ -25,24 +50,16 @@ static int	_load_features(t_app *app)
 		{
 			ch = app->map_grid[i][j];
 			if (LOOT == ch)
-				app->loots++;
+				_store_loot_pos(app, i, j, &app->loots);
 			if (EXIT == ch)
-			{
-				app->exit_pos.row = i;
-				app->exit_pos.col = j;
-				exits++;
-			}
+				_store_pos(&app->exit_pos, i, j, &app->exits);
 			if (START == ch)
-			{
-				app->player.row = i;
-				app->player.col = j;
-				starts++;
-			}
+				_store_pos(&app->player, i, j, &app->starts);
 			j++;
 		}
 		i++;
 	}
-	if (exits == 1 && starts == 1 && app->loots > 0)
+	if (app->exits == 1 && app->starts == 1 && app->loots > 0)
 		return (SUCCESS);
 	return (FAILURE);
 }
