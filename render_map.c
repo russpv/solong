@@ -3,7 +3,7 @@
 int		render_sprite(t_app*, t_img, int , int);
 int		render_map(t_app*);
 int		render_player(int, t_app*);
-int		render_stats(t_app*, const char *);
+int		render_stats(t_app*, int, const char *, int);
 void	get_sprite(t_app *, int, int);
 
 int	render_sprite(t_app *app, t_img sprite, int row, int col)
@@ -24,20 +24,22 @@ int	render_map(t_app *app)
 		while (++row < app->width) {
 			get_sprite(app, row, col); }
 	}
-	if (render_stats(app, "Player Moves: ") == FAILURE)
+	if (render_stats(app, app->moves, "Player Moves: ", 0) == FAILURE)
+		return (FAILURE);
+	if (render_stats(app, app->loots, "Loots: ", 20) == FAILURE)
 		return (FAILURE);
 	return (SUCCESS);
 }
 
-int	render_stats(t_app *app, const char *pre)
+int	render_stats(t_app *app, int stat, const char *pre, int adj)
 {
-	const char *suf = ft_itoa(app->moves);
+	const char *suf = ft_itoa(stat);
 	const char *str = ft_strjoin(pre, suf);
 	const int rgb = 201 << 16 | 62 << 8 | 62;
 	int result;
 
 	free((void *)suf);
-	result = mlx_string_put(app->mlx_ptr, app->win_ptr, STATSX, STATSY, rgb, (char *)str);
+	result = mlx_string_put(app->mlx_ptr, app->win_ptr, STATSX + adj, STATSY + adj, rgb, (char *)str);
    	free((void *)str);
 	return (result);
 }
@@ -50,6 +52,8 @@ void	get_sprite(t_app *app, int col, int row)
 		render_sprite(app, app->wall, row, col);
 	else if (code == SPACE)
 		;
+	else if (code == BADGUY)
+		render_sprite(app, app->enemy, row, col);
 	else if (code == LOOT)
 		render_sprite(app, app->loot, row, col);
 	else if (code == EXIT)

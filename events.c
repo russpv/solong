@@ -3,7 +3,28 @@
 int	on_keypress(int, void*);
 int	on_destroy(void*, int);
 int	move_player(char, int, int, t_app*);
-static int	_check_valid_move(int, int, t_app *);
+int	move_enemy(int, int, t_app*);
+int	check_valid_move(int, int, t_app *);
+
+int	move_enemy(int newrow, int newcol, t_app *app)
+{
+	const char tile_dest = app->map_grid[newrow][newcol];
+	char * const tile_orig = &app->map_grid[app->enemy_pos.row][app->enemy_pos.col];
+	
+	if (app->enemy_pos.row == app->exit_pos.row && app->enemy_pos.col == app->exit_pos.col)
+		*tile_orig = EXIT;
+	else if (on_a_loot(app, app->enemy_pos) == SUCCESS)
+		*tile_orig = LOOT;
+	else
+		*tile_orig = SPACE;
+	app->enemy_pos.row = newrow;
+	app->enemy_pos.col = newcol;
+	app->map_grid[app->enemy_pos.row][app->enemy_pos.col] = BADGUY;
+	render_map(app);
+	if (P_UP == tile_dest || P_DOWN == tile_dest || P_LEFT == tile_dest || P_RIGHT == tile_dest)
+		on_destroy(app, FAILURE);
+	return (SUCCESS);
+}
 
 int on_keypress(int keycode, void *param)
 {
@@ -32,18 +53,23 @@ int on_destroy(void *param, int cond)
 	app = (t_app *)param;
 	if (cond == SUCCESS)
 		ft_printf("YOU WIN!\n");
+	else
+		ft_printf("YOU LOSSSST\n");
 	cleanup(app);
 	exit(EXIT_SUCCESS);
 	return (0);
 }
 
-static int	_check_valid_move(int row, int col, t_app *app)
+int	check_valid_move(int row, int col, t_app *app)
 {
-	const char ch = app->map_grid[row][col]; 
+	char ch; 
 	
 	if ((row < 0 || row >= app->height) || (col < 0 || col >= app->width))
 		return (FAILURE);
-	if (ch == SPACE || ch == LOOT || ch == EXIT)
+	ch = app->map_grid[row][col]; 
+	if (ch == BADGUY || P_UP == ch || P_DOWN == ch || P_LEFT == ch || P_RIGHT == ch)
+		return (SUCCESS);
+	if (ch == SPACE || ch == LOOT || ch == EXIT )
 		return (SUCCESS);
 	return (FAILURE);
 }
@@ -53,7 +79,7 @@ int	move_player(char direction, int newrow, int newcol, t_app *app)
 	const char tile_dest = app->map_grid[newrow][newcol];
 	char * const tile_orig = &app->map_grid[app->player.row][app->player.col];
 	
-	if (_check_valid_move(newrow, newcol, app) == SUCCESS)
+	if (check_valid_move(newrow, newcol, app) == SUCCESS)
 	{
 		if (app->player.row == app->exit_pos.row && app->player.col == app->exit_pos.col)
 			*tile_orig = EXIT;
@@ -62,11 +88,16 @@ int	move_player(char direction, int newrow, int newcol, t_app *app)
 		app->player.row = newrow;
 		app->player.col = newcol;
 		if (tile_dest == LOOT)
-			app->loots--;
+			remove_loot(app, newrow, newcol);
 		app->moves++;
 	}
 	app->map_grid[app->player.row][app->player.col] = direction;
+	app->player_facing = get_player_direction(app);
+	if (app->player_facing == -1)
+		err("Corrupted map", app);
 	render_map(app);
+	if (tile_dest == BADGUY)
+		on_destroy(app, FAILURE);
 	if (tile_dest == EXIT && app->loots == 0)
 		on_destroy(app, SUCCESS);
 	return (SUCCESS);

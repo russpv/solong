@@ -15,10 +15,12 @@ static void	_store_loot_pos(t_app *app, int row, int col, int *loots)
 	int i;
 
 	(*loots)++;
+	app->loots_size++;
 	ptr = malloc(sizeof(t_pos) * (*loots));
 	if (!ptr)
 		err("Malloc error", app);
 	i = -1;
+	if (*loots > 1)
 	while (++i < *loots - 1)
 		ft_memcpy(&ptr[i], &app->loots_pos[i], sizeof(t_pos));
 	ptr[*loots - 1].row = row;
@@ -51,15 +53,19 @@ static int	_load_features(t_app *app)
 			ch = app->map_grid[i][j];
 			if (LOOT == ch)
 				_store_loot_pos(app, i, j, &app->loots);
-			if (EXIT == ch)
+			else if (EXIT == ch)
 				_store_pos(&app->exit_pos, i, j, &app->exits);
-			if (START == ch)
+			else if (START == ch)
 				_store_pos(&app->player, i, j, &app->starts);
+			else if (BADGUY == ch)
+				_store_pos(&app->enemy_pos, i, j, &app->enemies);
+			else if (!(SPACE == ch || WALL == ch))
+				err(RED"Invalid map character found"DEFAULT, app);
 			j++;
 		}
 		i++;
 	}
-	if (app->exits == 1 && app->starts == 1 && app->loots > 0)
+	if (app->exits == 1 && app->starts == 1 && app->loots > 0 && app->enemies <= 1)
 		return (SUCCESS);
 	return (FAILURE);
 }
@@ -81,6 +87,7 @@ void	init_sprites(t_app *app)
 	app->wall = new_sprite(ptr, WALL_XPM);
 	app->loot = new_sprite(ptr, LOOT_XPM);
 	app->exit = new_sprite(ptr, EXIT_XPM);
+	app->enemy = new_sprite(ptr, ENEMY_XPM);
 	app->player_right = new_sprite(ptr, PLAYER_RIGHT_XPM);
 	app->player_left = new_sprite(ptr, PLAYER_LEFT_XPM);
 	app->player_up = new_sprite(ptr, PLAYER_UP_XPM);
@@ -92,8 +99,8 @@ void	init_app(t_app *app)
 {
 	app->mlx_ptr = mlx_init();
 	if (!app->mlx_ptr)
-		err("mlx_init() fail", app);
+		err(RED"mlx_init() failed"DEFAULT, app);
 	init_sprites(app);
 	if (_load_features(app) == FAILURE)
-		err("Invalid map", app);
+		err(RED"Invalid map"DEFAULT, app);
 }

@@ -1,16 +1,22 @@
 #include "solong.h"
 
-int		find_path(t_app*, t_pos, int, int);
+int			find_path(t_app*, t_pos, int, int);
+int			check_paths(t_app*);
 static void	_new_blank_map(t_app*);
-int		check_paths(t_app*);
-static int	_valid_move();
+static int	_valid_move(t_app*, int, int);
 
-static int	_valid_move();
+/* Returns false if location is out-of-bounds */
+static int	_valid_move(t_app *app, int row, int col)
 {
-	//TODO
+	if ((app->map_grid[row][col] == WALL) ||
+		(app->map_grid[row][col] == BADGUY) ||
+		(row < 0) || (col < 0) ||
+		(row + 1 > app->height) || (col + 1 > app->width))
+		return (FAILURE);
+	return (SUCCESS);
 }
 
-/* Returns a new blank map */
+/* Returns a new blank map; null-terminated due to free function */
 static void	_new_blank_map(t_app *app)
 {
 	int i;
@@ -22,14 +28,14 @@ static void	_new_blank_map(t_app *app)
 		err("Malloc error", app);
 	app->test_map[app->height] = NULL;
 	i = -1;
-	while (app->test_map[++i])
+	while (++i < app->height)
 	{
 		app->test_map[i] = malloc(sizeof(char) * (app->width + 1));
 		if (!app->test_map[i])
 			err("Malloc error", app);
 		ft_memset(app->test_map[i], NOTVISI, sizeof(char) * app->width);
+		app->test_map[i][app->width] = '\0';
 	}
-	app->test_map[app->height][app->width] = '\0';
 }
 
 /* Recursively moves through map until goal reached */
@@ -37,7 +43,7 @@ int	find_path(t_app *app, t_pos goal, int row, int col)
 {
 	t_pos current;
 
-	if (!valid_move(app, row, col))
+	if (!_valid_move(app, row, col) || app->test_map[row][col] == VISITED)
 		return (FAILURE);
 	current.row = row;
 	current.col = col;
@@ -66,7 +72,7 @@ int	check_paths(t_app *app)
 	{
 		_new_blank_map(app);
 		if (!find_path(app, app->loots_pos[i], app->player.row, app->player.col))
-			return (FAILURE);
+			return (free_map_grid(app->test_map), FAILURE);
 	}
 	free_map_grid(app->test_map);
 	app->test_map = NULL;	
