@@ -10,7 +10,8 @@ static int	_checkarg(const char *filename)
 	const size_t	len = ft_strlen(filename);
 
 	if (len < ft_strlen(EXTENSION))
-		return (perror("Error\nArgument must be a " EXTENSION " map file"), FAILURE);
+		return (perror("Error\nArgument must be a "EXTENSION" map file") \
+				, FAILURE);
 	if (ft_strncmp(&filename[len - 4], EXTENSION, 4) != 0)
 		return (perror("Error\nArgument must be a .ber map file"), FAILURE);
 	if (access(filename, F_OK) != 0)

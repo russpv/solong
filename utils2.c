@@ -65,7 +65,7 @@ void	init_sprites(t_app *app)
 /* Ensures contiguous wall map border */
 int	check_map_walled(t_app *app)
 {
-	int i;
+	int	i;
 
 	i = -1;
 	while (++i < app->width)
