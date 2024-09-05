@@ -4,6 +4,7 @@ t_img		new_sprite(void *a, char *b);
 int			on_a_loot(t_app *a, t_pos b);
 int			remove_loot(t_app *a, int b, int c);
 void		init_sprites(t_app *a);
+int			check_map_walled(t_app*a);
 
 t_img	new_sprite(void *ptr, char *filename)
 {
@@ -59,4 +60,28 @@ void	init_sprites(t_app *app)
 	app->player_left = new_sprite(ptr, PLAYER_LEFT_XPM);
 	app->player_up = new_sprite(ptr, PLAYER_UP_XPM);
 	app->player_down = new_sprite(ptr, PLAYER_DOWN_XPM);
+}
+
+/* Ensures contiguous wall map border */
+int	check_map_walled(t_app *app)
+{
+	int i;
+
+	i = -1;
+	while (++i < app->width)
+		if (WALL != app->map_grid[0][i])
+			return (FAILURE);
+	i = -1;
+	while (++i < app->height)
+		if (WALL != app->map_grid[i][0])
+			return (FAILURE);
+	i = -1;
+	while (++i < app->width)
+		if (WALL != app->map_grid[app->height - 1][i])
+			return (FAILURE);
+	i = -1;
+	while (++i < app->height)
+		if (WALL != app->map_grid[i][app->width - 1])
+			return (FAILURE);
+	return (SUCCESS);
 }

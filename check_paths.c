@@ -24,14 +24,14 @@ static void	_new_blank_map(t_app *app)
 		free_map_grid(app->test_map);
 	app->test_map = malloc(sizeof(char *) * (app->height + 1));
 	if (!app->test_map)
-		err("Malloc error", app, -1, NULL);
+		err("Error\nMalloc error", app, -1, NULL);
 	app->test_map[app->height] = NULL;
 	i = -1;
 	while (++i < app->height)
 	{
 		app->test_map[i] = malloc(sizeof(char) * (app->width + 1));
 		if (!app->test_map[i])
-			err("Malloc error", app, -1, NULL);
+			err("Error\nMalloc error", app, -1, NULL);
 		ft_memset(app->test_map[i], NOTVISI, sizeof(char) * app->width);
 		app->test_map[i][app->width] = '\0';
 	}

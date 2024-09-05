@@ -167,3 +167,4 @@ size_t	arrlen(char **);
 void	update_player_direction(t_app *, char);
 int		on_a_loot(t_app*,t_pos);
 int		remove_loot(t_app*, int, int);
+int		check_map_walled(t_app*);

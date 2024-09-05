@@ -16,7 +16,7 @@ static void	_store_loot_pos(t_app *app, int row, int col, int *loots)
 	app->loots_size++;
 	ptr = malloc(sizeof(t_pos) * (*loots));
 	if (!ptr)
-		err("Malloc error", app, -1, NULL);
+		err("Error\nMalloc error", app, -1, NULL);
 	i = -1;
 	if (*loots > 1)
 		while (++i < *loots - 1)
@@ -46,7 +46,7 @@ static void	_do_loop_ops(t_app *app, char ch, int i, int j)
 	else if (BADGUY == ch)
 		_store_pos(&app->enemy_pos, i, j, &app->enemies);
 	else if (!(SPACE == ch || WALL == ch))
-		err(RED "Invalid map character found" DEFAULT, app, -1, NULL);
+		err(RED "Error\nInvalid map character found" DEFAULT, app, -1, NULL);
 }
 
 /* Ensures required map features are present and sets counters */
@@ -75,8 +75,10 @@ void	init_app(t_app *app)
 {
 	app->mlx_ptr = mlx_init();
 	if (!app->mlx_ptr)
-		err(RED "mlx_init() failed" DEFAULT, app, -1, NULL);
+		err(RED "Error\nmlx_init() failed" DEFAULT, app, -1, NULL);
 	init_sprites(app);
 	if (_load_map_features(app) == FAILURE)
-		err(RED "Invalid map" DEFAULT, app, -1, NULL);
+		err(RED "Error\nInvalid map" DEFAULT, app, -1, NULL);
+	if (check_map_walled(app) == FAILURE)
+		err(RED"Error\nMap not walled"DEFAULT, app, -1, NULL);
 }

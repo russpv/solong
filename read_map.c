@@ -11,7 +11,7 @@ static void	_do_trim(t_app *app, char **tmp, int fd, char *buf)
 
 	tmp2 = ft_strtrim(*tmp, "\r\0 ");
 	if (!tmp2)
-		err(RED"Malloc error"DEFAULT, app, fd, buf);
+		err(RED"Error\nMalloc error"DEFAULT, app, fd, buf);
 	ft_memset(*tmp, 0, ft_strlen(*tmp));
 	ft_memmove(*tmp, tmp2, ft_strlen(tmp2));
 	free(tmp2);
@@ -26,7 +26,7 @@ int	get_line(int fd, char **buf)
 
 	*buf = malloc(sizeof(char) * BUFSZ);
 	if (!(*buf))
-		return (perror("Malloc error"), FAILURE);
+		return (perror("Error\nMalloc error"), FAILURE);
 	i = 0;
 	while (i < BUFSZ - 2)
 	{
@@ -57,7 +57,7 @@ void	get_map(char *tmp, int fd, t_app *app)
 		if (bytes > 0)
 		{
 			if (ft_strlcat(tmp, buf, BUFSZ) >= BUFSZ)
-				err(RED "Aborted: map read buffer overflow"DEFAULT, \
+				err(RED "Error\nmap read buffer overflow"DEFAULT, \
 						app, fd, buf);
 			else
 				_do_trim(app, &tmp, fd, buf);
@@ -68,6 +68,6 @@ void	get_map(char *tmp, int fd, t_app *app)
 	}
 	close(fd);
 	if (bytes < 0)
-		err(RED "Aborted: problem reading map file" DEFAULT, app, \
+		err(RED "Error\nproblem reading map file" DEFAULT, app, \
 				-1, NULL);
 }

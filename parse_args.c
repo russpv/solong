@@ -10,13 +10,13 @@ static int	_checkarg(const char *filename)
 	const size_t	len = ft_strlen(filename);
 
 	if (len < ft_strlen(EXTENSION))
-		return (perror("Argument must be a " EXTENSION " map file"), FAILURE);
+		return (perror("Error\nArgument must be a " EXTENSION " map file"), FAILURE);
 	if (ft_strncmp(&filename[len - 4], EXTENSION, 4) != 0)
-		return (perror("Argument must be a .ber map file"), FAILURE);
+		return (perror("Error\nArgument must be a .ber map file"), FAILURE);
 	if (access(filename, F_OK) != 0)
-		return (perror("Input file does not exist"), FAILURE);
+		return (perror("Error\nInput file does not exist"), FAILURE);
 	if (access(filename, R_OK) != 0)
-		return (perror("Input file couldn't be read"), FAILURE);
+		return (perror("Error\nInput file couldn't be read"), FAILURE);
 	return (SUCCESS);
 }
 
@@ -42,19 +42,19 @@ void	parse_args(int argc, char **argv, t_app *app)
 
 	ft_memset(tmp, 0, sizeof(tmp));
 	if (argc != 2)
-		err(RED "Aborted: Program requires exactly one argument" DEFAULT, \
+		err(RED "Error\nProgram requires exactly one argument" DEFAULT, \
 				app, -1, NULL);
 	if (_checkarg(argv[1]) == FAILURE)
-		err(RED "Aborted: Problem parsing .ber file" DEFAULT, app, -1, NULL);
+		err(RED "Error\nProblem parsing .ber file" DEFAULT, app, -1, NULL);
 	fd = open(argv[1], O_RDONLY);
 	if (-1 == fd)
-		err(RED "Aborted: Problem opening input file" DEFAULT, app, -1, NULL);
+		err(RED "Error\nProblem opening input file" DEFAULT, app, -1, NULL);
 	get_map(tmp, fd, app);
 	app->map_grid = ft_split(tmp, '\n');
 	if (!app->map_grid)
-		err(RED "Aborted: malloc error" DEFAULT, app, -1, NULL);
+		err(RED "Error\nmalloc error" DEFAULT, app, -1, NULL);
 	app->width = ft_strlen(app->map_grid[0]);
 	app->height = arrlen(app->map_grid);
 	if (_check_map_square(app) == FAILURE)
-		err(RED "Aborted: map not square" DEFAULT, app, -1, NULL);
+		err(RED "Error\nmap not square" DEFAULT, app, -1, NULL);
 }

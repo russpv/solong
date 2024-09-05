@@ -8,11 +8,11 @@ int	main(int argc, char **argv)
 	parse_args(argc, argv, &app);
 	init_app(&app);
 	if (check_paths(&app) == FAILURE)
-		err(RED "Map impossible to solve" DEFAULT, &app, -1, NULL);
+		err(RED "Error\nMap impossible to solve" DEFAULT, &app, -1, NULL);
 	app.win_ptr = mlx_new_window(app.mlx_ptr, app.width * SCALE, app.height
 			* SCALE, "A MinilibX Game");
 	if (!app.win_ptr)
-		err("Window initialization error", &app, -1, NULL);
+		err("Error\nWindow initialization error", &app, -1, NULL);
 	render_map(&app);
 	init_animation(&app);
 	mlx_loop_hook(app.mlx_ptr, update_game, &app);
