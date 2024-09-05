@@ -1,12 +1,11 @@
 #include "solong.h"
 #include <time.h>
 
-int			update_game(void *);
-int			init_animation(t_app *);
-double		get_time_elapsed(clock_t);
-
-static int	_animate_player(t_app *);
-static int	_enemy_move_timer(t_app *);
+int			update_game(void *_);
+int			init_animation(t_app *_);
+double		get_time_elapsed(clock_t _);
+static int	_animate_player(t_app *_);
+static int	_enemy_move_timer(t_app *_);
 
 /* Returns relative time elapsed in seconds */
 double	get_time_elapsed(clock_t time)

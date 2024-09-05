@@ -1,7 +1,24 @@
 #include "solong.h"
 
-void	cleanup(t_app *);
-void	free_map_grid(char **);
+void	cleanup(t_app *_);
+void	_free_sprites(t_app *_);
+void	free_map_grid(char **_);
+
+void	cleanup(t_app *app)
+{
+	free_map_grid(app->map_grid);
+	free_map_grid(app->test_map);
+	if (app->loots_pos)
+		free(app->loots_pos);
+	_free_sprites(app);
+	if (app->win_ptr)
+		mlx_destroy_window(app->mlx_ptr, app->win_ptr);
+	if (app->mlx_ptr)
+	{
+		mlx_destroy_display(app->mlx_ptr);
+		free(app->mlx_ptr);
+	}
+}
 
 /* Exits if called prior to init_app */
 void	_free_sprites(t_app *app)
@@ -29,22 +46,6 @@ void	_free_sprites(t_app *app)
 		j = -1;
 		while (++j < NUM_FRAMES)
 			mlx_destroy_image(app->mlx_ptr, app->frames[i][j].xpm_ptr);
-	}
-}
-
-void	cleanup(t_app *app)
-{
-	free_map_grid(app->map_grid);
-	free_map_grid(app->test_map);
-	if (app->loots_pos)
-		free(app->loots_pos);
-	_free_sprites(app);
-	if (app->win_ptr)
-		mlx_destroy_window(app->mlx_ptr, app->win_ptr);
-	if (app->mlx_ptr)
-	{
-		mlx_destroy_display(app->mlx_ptr);
-		free(app->mlx_ptr);
 	}
 }
 

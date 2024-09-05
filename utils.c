@@ -1,13 +1,10 @@
 #include "solong.h"
 
-void	print_map(t_app *);
-
-void	err(char *msg, t_app *app);
-size_t	arrlen(char **);
-void	init_struct(t_app *);
-int		get_player_direction(t_app *);
-int		on_a_loot(t_app *, t_pos);
-int		remove_loot(t_app *, int, int);
+void			err(char *a, t_app *b, int c, char *d);
+size_t			arrlen(char **a);
+static void		_init_struct_secondaries(t_app *a);
+void			init_struct(t_app *a);
+void			update_player_direction(t_app *a, char b);
 
 size_t	arrlen(char **arr)
 {
@@ -21,28 +18,20 @@ size_t	arrlen(char **arr)
 	return (i);
 }
 
-/* Test function TODO delete */
-void	print_map(t_app *app)
-{
-	const char	**ptr = (const char **)app->map_grid;
-
-	if (!ptr)
-		return ;
-	if (!*ptr)
-		return ;
-	while (*ptr)
-		ft_printf("%s\n", *ptr++);
-}
-
-void	err(char *msg, t_app *app)
+/* fd and new are optional args */
+void	err(char *msg, t_app *app, int fd, char *new)
 {
 	errno = EINVAL;
 	perror(msg);
 	cleanup(app);
+	if (fd >= 0)
+		close(fd);
+	if (new)
+		free(new);
 	exit(1);
 }
 
-void	init_struct(t_app *app)
+static void	_init_struct_secondaries(t_app *app)
 {
 	int	i;
 	int	j;
@@ -54,6 +43,11 @@ void	init_struct(t_app *app)
 		while (++j < NUM_FRAMES)
 			app->frames[i][j].xpm_ptr = NULL;
 	}
+	app->space.xpm_ptr = NULL;
+}
+
+void	init_struct(t_app *app)
+{
 	app->mlx_ptr = NULL;
 	app->win_ptr = NULL;
 	app->map_grid = NULL;
@@ -64,49 +58,23 @@ void	init_struct(t_app *app)
 	app->loots_size = 0;
 	app->enemies = 0;
 	app->frame = 0;
+	app->exits = 0;
+	app->starts = 0;
 	app->player_facing = right;
+	app->loots_pos = NULL;
+	app->test_map = NULL;
+	_init_struct_secondaries(app);
 }
 
-int	get_player_direction(t_app *app)
+void	update_player_direction(t_app *app, char direction)
 {
+	app->map_grid[app->player.row][app->player.col] = direction;
 	if (P_UP == app->map_grid[app->player.row][app->player.col])
-		return (up);
+		app->player_facing = up;
 	if (P_DOWN == app->map_grid[app->player.row][app->player.col])
-		return (down);
+		app->player_facing = down;
 	if (P_LEFT == app->map_grid[app->player.row][app->player.col])
-		return (left);
+		app->player_facing = left;
 	if (P_RIGHT == app->map_grid[app->player.row][app->player.col])
-		return (right);
-	return (-1);
-}
-
-int	on_a_loot(t_app *app, t_pos pos)
-{
-	int	i;
-
-	i = -1;
-	while (++i < app->loots)
-		if (pos.row == app->loots_pos[i].row
-			&& pos.col == app->loots_pos[i].col)
-			return (SUCCESS);
-	return (FAILURE);
-}
-
-/* Replaces valid loot position with out-of-bounds position and decrements counter */
-int	remove_loot(t_app *app, int row, int col)
-{
-	int	i;
-
-	i = -1;
-	while (++i < app->loots_size)
-	{
-		if (row == app->loots_pos[i].row && col == app->loots_pos[i].col)
-		{
-			app->loots_pos[i].row = -1;
-			app->loots_pos[i].col = -1;
-			app->loots--;
-			return (SUCCESS);
-		}
-	}
-	return (FAILURE);
+		app->player_facing = right;
 }

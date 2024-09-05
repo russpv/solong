@@ -136,6 +136,9 @@ int		check_valid_move(int, int, t_app*);
 /* parse_args */
 void	parse_args(int argc, char **argv, t_app *app);
 
+/* read map */
+void	get_map(char *, int, t_app *);
+
 /* init_app */
 t_img	new_sprite(void *, char *);
 void	init_sprites(t_app *);
@@ -159,8 +162,8 @@ void	cleanup(t_app *);
 
 /* utils */
 void	init_struct();
-void	err(char*, t_app*);
+void	err(char *a, t_app *b, int c, char *d);
 size_t	arrlen(char **);
-int		get_player_direction(t_app*);
+void	update_player_direction(t_app *, char);
 int		on_a_loot(t_app*,t_pos);
 int		remove_loot(t_app*, int, int);

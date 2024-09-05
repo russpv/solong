@@ -2,8 +2,8 @@ NAME = solong
 OUTPUT = executable
 
 SOURCES = main.c parse_args.c init_app.c check_paths.c render_map.c \
-		  events.c utils.c frees.c \
-		  animation.c
+		  events.c utils.c utils2.c frees.c \
+		  animation.c read_map.c
 BONUS_SOURCES = $(SOURCES)
 BONUS_OBJECTS = $(BONUS_SOURCES:.c=.o)
 OBJECTS = $(SOURCES:.c=.o)

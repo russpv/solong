@@ -1,16 +1,17 @@
 #include "solong.h"
 
-int	on_keypress(int, void *);
-int	on_destroy(void *, int);
-int	move_player(char, int, int, t_app *);
-int	move_enemy(int, int, t_app *);
-int	check_valid_move(int, int, t_app *);
+int	on_keypress(int a, void *b);
+int	on_destroy(void *a, int b);
+int	move_player(char a, int b, int c, t_app *d);
+int	move_enemy(int a, int b, t_app *c);
+int	check_valid_move(int a, int b, t_app *c);
 
 int	move_enemy(int newrow, int newcol, t_app *app)
 {
 	const char	tile_dest = app->map_grid[newrow][newcol];
+	char *const	tile_orig = \
+		&app->map_grid[app->enemy_pos.row][app->enemy_pos.col];
 
-	char *const tile_orig = &app->map_grid[app->enemy_pos.row][app->enemy_pos.col];
 	if (app->enemy_pos.row == app->exit_pos.row
 		&& app->enemy_pos.col == app->exit_pos.col)
 		*tile_orig = EXIT;
@@ -43,8 +44,6 @@ int	on_keypress(int keycode, void *param)
 		move_player(P_RIGHT, app->player.row, app->player.col + 1, app);
 	else if (keycode == ESCAPE)
 		on_destroy(param, FAILURE);
-	else
-		;
 	return (0);
 }
 
@@ -80,8 +79,8 @@ int	check_valid_move(int row, int col, t_app *app)
 int	move_player(char direction, int newrow, int newcol, t_app *app)
 {
 	const char	tile_dest = app->map_grid[newrow][newcol];
+	char *const	tile_orig = &app->map_grid[app->player.row][app->player.col];
 
-	char *const tile_orig = &app->map_grid[app->player.row][app->player.col];
 	if (check_valid_move(newrow, newcol, app) == SUCCESS)
 	{
 		if (app->player.row == app->exit_pos.row
@@ -95,10 +94,7 @@ int	move_player(char direction, int newrow, int newcol, t_app *app)
 			remove_loot(app, newrow, newcol);
 		app->moves++;
 	}
-	app->map_grid[app->player.row][app->player.col] = direction;
-	app->player_facing = get_player_direction(app);
-	if (app->player_facing == -1)
-		err("Corrupted map", app);
+	update_player_direction(app, direction);
 	render_map(app);
 	if (tile_dest == BADGUY)
 		on_destroy(app, FAILURE);

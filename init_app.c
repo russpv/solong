@@ -1,14 +1,12 @@
 #include "solong.h"
 
-t_img		new_sprite(void *, char *);
-void		init_sprites(t_app *);
-void		init_app(t_app *);
+void		init_app(t_app *a);
+static int	_load_map_features(t_app *a);
+static void	_do_loop_ops(t_app *a, char b, int c, int d);
+static void	_store_pos(t_pos *a, int b, int c, int *d);
+static void	_store_loot_pos(t_app *a, int b, int c, int *d);
 
-static int	_load_features(t_app *);
-static void	_store_pos(t_pos *, int, int, int *);
-static void	_store_loot_pos(t_app *, int, int, int *);
-
-/* realloc position array of structs */
+/* realloc loot entity positions stored as array of structs */
 static void	_store_loot_pos(t_app *app, int row, int col, int *loots)
 {
 	t_pos	*ptr;
@@ -18,14 +16,15 @@ static void	_store_loot_pos(t_app *app, int row, int col, int *loots)
 	app->loots_size++;
 	ptr = malloc(sizeof(t_pos) * (*loots));
 	if (!ptr)
-		err("Malloc error", app);
+		err("Malloc error", app, -1, NULL);
 	i = -1;
 	if (*loots > 1)
 		while (++i < *loots - 1)
 			ft_memcpy(&ptr[i], &app->loots_pos[i], sizeof(t_pos));
 	ptr[*loots - 1].row = row;
 	ptr[*loots - 1].col = col;
-	free(app->loots_pos);
+	if (app->loots_pos)
+		free(app->loots_pos);
 	app->loots_pos = ptr;
 }
 
@@ -36,34 +35,34 @@ static void	_store_pos(t_pos *pos, int row, int col, int *counter)
 	(*counter)++;
 }
 
-static int	_load_features(t_app *app)
+static void	_do_loop_ops(t_app *app, char ch, int i, int j)
+{
+	if (LOOT == ch)
+		_store_loot_pos(app, i, j, &app->loots);
+	else if (EXIT == ch)
+		_store_pos(&app->exit_pos, i, j, &app->exits);
+	else if (START == ch)
+		_store_pos(&app->player, i, j, &app->starts);
+	else if (BADGUY == ch)
+		_store_pos(&app->enemy_pos, i, j, &app->enemies);
+	else if (!(SPACE == ch || WALL == ch))
+		err(RED "Invalid map character found" DEFAULT, app, -1, NULL);
+}
+
+/* Ensures required map features are present and sets counters */
+static int	_load_map_features(t_app *app)
 {
 	int	i;
 	int	j;
-	int	ch;
 
 	if (!app->map_grid)
 		return (FAILURE);
-	i = 0;
-	while (app->map_grid[i])
+	i = -1;
+	while (app->map_grid[++i])
 	{
-		j = 0;
-		while (app->map_grid[i][j])
-		{
-			ch = app->map_grid[i][j];
-			if (LOOT == ch)
-				_store_loot_pos(app, i, j, &app->loots);
-			else if (EXIT == ch)
-				_store_pos(&app->exit_pos, i, j, &app->exits);
-			else if (START == ch)
-				_store_pos(&app->player, i, j, &app->starts);
-			else if (BADGUY == ch)
-				_store_pos(&app->enemy_pos, i, j, &app->enemies);
-			else if (!(SPACE == ch || WALL == ch))
-				err(RED "Invalid map character found" DEFAULT, app);
-			j++;
-		}
-		i++;
+		j = -1;
+		while (app->map_grid[i][++j])
+			_do_loop_ops(app, app->map_grid[i][j], i, j);
 	}
 	if (app->exits == 1 && app->starts == 1 && app->loots > 0
 		&& app->enemies <= 1)
@@ -71,37 +70,13 @@ static int	_load_features(t_app *app)
 	return (FAILURE);
 }
 
-t_img	new_sprite(void *ptr, char *filename)
-{
-	t_img	img;
-
-	img.xpm_ptr = mlx_xpm_file_to_image(ptr, filename, &img.x, &img.y);
-	return (img);
-}
-
-/* Create all sprites */
-void	init_sprites(t_app *app)
-{
-	void	*ptr;
-
-	ptr = app->mlx_ptr;
-	app->wall = new_sprite(ptr, WALL_XPM);
-	app->loot = new_sprite(ptr, LOOT_XPM);
-	app->exit = new_sprite(ptr, EXIT_XPM);
-	app->enemy = new_sprite(ptr, ENEMY_XPM);
-	app->player_right = new_sprite(ptr, PLAYER_RIGHT_XPM);
-	app->player_left = new_sprite(ptr, PLAYER_LEFT_XPM);
-	app->player_up = new_sprite(ptr, PLAYER_UP_XPM);
-	app->player_down = new_sprite(ptr, PLAYER_DOWN_XPM);
-}
-
 /* Create the game pointer */
 void	init_app(t_app *app)
 {
 	app->mlx_ptr = mlx_init();
 	if (!app->mlx_ptr)
-		err(RED "mlx_init() failed" DEFAULT, app);
+		err(RED "mlx_init() failed" DEFAULT, app, -1, NULL);
 	init_sprites(app);
-	if (_load_features(app) == FAILURE)
-		err(RED "Invalid map" DEFAULT, app);
+	if (_load_map_features(app) == FAILURE)
+		err(RED "Invalid map" DEFAULT, app, -1, NULL);
 }

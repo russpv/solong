@@ -1,9 +1,9 @@
 #include "solong.h"
 
-int			find_path(t_app *, t_pos, int, int);
-int			check_paths(t_app *);
-static void	_new_blank_map(t_app *);
-static int	_valid_move(t_app *, int, int);
+int			find_path(t_app *a, t_pos b, int c, int d);
+int			check_paths(t_app *a);
+static void	_new_blank_map(t_app *a);
+static int	_valid_move(t_app *a, int b, int c);
 
 /* Returns false if location is out-of-bounds */
 static int	_valid_move(t_app *app, int row, int col)
@@ -24,14 +24,14 @@ static void	_new_blank_map(t_app *app)
 		free_map_grid(app->test_map);
 	app->test_map = malloc(sizeof(char *) * (app->height + 1));
 	if (!app->test_map)
-		err("Malloc error", app);
+		err("Malloc error", app, -1, NULL);
 	app->test_map[app->height] = NULL;
 	i = -1;
 	while (++i < app->height)
 	{
 		app->test_map[i] = malloc(sizeof(char) * (app->width + 1));
 		if (!app->test_map[i])
-			err("Malloc error", app);
+			err("Malloc error", app, -1, NULL);
 		ft_memset(app->test_map[i], NOTVISI, sizeof(char) * app->width);
 		app->test_map[i][app->width] = '\0';
 	}
