@@ -1,9 +1,9 @@
 #include "solong.h"
 #include <time.h>
 
-int	update_game(void *);
-int	init_animation(t_app *);
-double	get_time_elapsed(clock_t);
+int			update_game(void *);
+int			init_animation(t_app *);
+double		get_time_elapsed(clock_t);
 
 static int	_animate_player(t_app *);
 static int	_enemy_move_timer(t_app *);
@@ -17,8 +17,8 @@ double	get_time_elapsed(clock_t time)
 int	update_game(void *param)
 {
 	t_app	*app;
-	
-	app = (t_app*)param;
+
+	app = (t_app *)param;
 	_animate_player(app);
 	if (app->enemies > 0)
 		_enemy_move_timer(app);
@@ -30,20 +30,20 @@ static int	_animate_player(t_app *app)
 	if (get_time_elapsed(app->time) <= TARGET_DELAY)
 		return (FAILURE);
 	app->time = clock();
-	mlx_put_image_to_window(app->mlx_ptr, app->win_ptr, app->space.xpm_ptr, \
+	mlx_put_image_to_window(app->mlx_ptr, app->win_ptr, app->space.xpm_ptr,
 		app->player.col * SCALE, app->player.row * SCALE);
 	if (NUM_FRAMES == ++app->frame)
 		app->frame = 0;
-	mlx_put_image_to_window(app->mlx_ptr, app->win_ptr, \
-			app->frames[app->player_facing][app->frame].xpm_ptr, \
-		app->player.col * SCALE, app->player.row * SCALE);
+	mlx_put_image_to_window(app->mlx_ptr, app->win_ptr,
+		app->frames[app->player_facing][app->frame].xpm_ptr, app->player.col
+		* SCALE, app->player.row * SCALE);
 	return (SUCCESS);
 }
 
 int	init_animation(t_app *app)
 {
-	void *ptr;
-	
+	void	*ptr;
+
 	ptr = app->mlx_ptr;
 	if (!app)
 		return (FAILURE);
@@ -68,11 +68,11 @@ int	init_animation(t_app *app)
 
 static int	_enemy_move_timer(t_app *app)
 {
-	int rnum;
-	int row;
-	int col;
+	int	rnum;
+	int	row;
+	int	col;
 
-	if (get_time_elapsed(app->enemy_timestamp) <  ENEMY_DELAY)
+	if (get_time_elapsed(app->enemy_timestamp) < ENEMY_DELAY)
 		return (FAILURE);
 	row = -1;
 	col = -1;

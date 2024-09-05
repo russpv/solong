@@ -1,17 +1,16 @@
 #include "solong.h"
 
-int			find_path(t_app*, t_pos, int, int);
-int			check_paths(t_app*);
-static void	_new_blank_map(t_app*);
-static int	_valid_move(t_app*, int, int);
+int			find_path(t_app *, t_pos, int, int);
+int			check_paths(t_app *);
+static void	_new_blank_map(t_app *);
+static int	_valid_move(t_app *, int, int);
 
 /* Returns false if location is out-of-bounds */
 static int	_valid_move(t_app *app, int row, int col)
 {
-	if ((app->map_grid[row][col] == WALL) ||
-		(app->map_grid[row][col] == BADGUY) ||
-		(row < 0) || (col < 0) ||
-		(row + 1 > app->height) || (col + 1 > app->width))
+	if ((app->map_grid[row][col] == WALL) || (app->map_grid[row][col] == BADGUY)
+		|| (row < 0) || (col < 0) || (row + 1 > app->height) || (col
+			+ 1 > app->width))
 		return (FAILURE);
 	return (SUCCESS);
 }
@@ -19,7 +18,7 @@ static int	_valid_move(t_app *app, int row, int col)
 /* Returns a new blank map; null-terminated due to free function */
 static void	_new_blank_map(t_app *app)
 {
-	int i;
+	int	i;
 
 	if (app->test_map)
 		free_map_grid(app->test_map);
@@ -41,7 +40,7 @@ static void	_new_blank_map(t_app *app)
 /* Recursively moves through map until goal reached */
 int	find_path(t_app *app, t_pos goal, int row, int col)
 {
-	t_pos current;
+	t_pos	current;
 
 	if (!_valid_move(app, row, col) || app->test_map[row][col] == VISITED)
 		return (FAILURE);
@@ -50,10 +49,9 @@ int	find_path(t_app *app, t_pos goal, int row, int col)
 	app->test_map[row][col] = VISITED;
 	if (goal.row == current.row && goal.col == current.col)
 		return (SUCCESS);
-	if ((find_path(app, goal, row - 1, col)) ||
-		(find_path(app, goal, row + 1, col)) ||
-		(find_path(app, goal, row, col - 1)) ||
-		(find_path(app, goal, row, col + 1)))
+	if ((find_path(app, goal, row - 1, col)) || (find_path(app, goal, row + 1,
+				col)) || (find_path(app, goal, row, col - 1)) || (find_path(app,
+				goal, row, col + 1)))
 		return (SUCCESS);
 	app->test_map[row][col] = NOTVISI;
 	return (FAILURE);
@@ -62,7 +60,7 @@ int	find_path(t_app *app, t_pos goal, int row, int col)
 /* Tests that all loot and exit can be reached from start */
 int	check_paths(t_app *app)
 {
-	int i;
+	int	i;
 
 	_new_blank_map(app);
 	if (!find_path(app, app->exit_pos, app->player.row, app->player.col))
@@ -71,10 +69,11 @@ int	check_paths(t_app *app)
 	while (++i < app->loots)
 	{
 		_new_blank_map(app);
-		if (!find_path(app, app->loots_pos[i], app->player.row, app->player.col))
+		if (!find_path(app, app->loots_pos[i], app->player.row,
+				app->player.col))
 			return (free_map_grid(app->test_map), FAILURE);
 	}
 	free_map_grid(app->test_map);
-	app->test_map = NULL;	
+	app->test_map = NULL;
 	return (SUCCESS);
 }

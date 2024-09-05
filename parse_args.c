@@ -1,23 +1,24 @@
 #include "solong.h"
 
-void	parse_args(int argc, char **argv, t_app *app);
-static int		_checkarg(const char *);
-void	get_map(char*, int, t_app *);
-int		get_line(int, char **);
+void		parse_args(int argc, char **argv, t_app *app);
+static int	_checkarg(const char *);
+void		get_map(char *, int, t_app *);
+int			get_line(int, char **);
 static int	_check_map_square(t_app *);
 
 /*
-static void print_map_content(const char *map) {
-    for (size_t i = 0; map[i] != '\0'; i++) {
-        fprintf(stderr, "Character %zu: '%c' (ASCII: %d)\n", i, map[i], (unsigned char)map[i]);
-    }
+static void	print_map_content(const char *map) {
+	for (size_t i = 0; map[i] != '\0'; i++) {
+		fprintf(stderr, "Character %zu: '%c' (ASCII: %d)\n", i, map[i],
+			(unsigned char)map[i]);
+	}
 	fflush(stderr);
 }
 */
 
-static int		_check_map_square(t_app *app)
+static int	_check_map_square(t_app *app)
 {
-	int i;
+	int	i;
 
 	if (!app->map_grid)
 		return (FAILURE);
@@ -29,12 +30,12 @@ static int		_check_map_square(t_app *app)
 }
 
 /* Run simple format checks */
-static int		_checkarg(const char *filename)
+static int	_checkarg(const char *filename)
 {
-	const size_t len = ft_strlen(filename);
+	const size_t	len = ft_strlen(filename);
 
-	if (len < ft_strlen(EXTENSION)) 
-		return (perror("Argument must be a "EXTENSION" map file"), FAILURE);
+	if (len < ft_strlen(EXTENSION))
+		return (perror("Argument must be a " EXTENSION " map file"), FAILURE);
 	if (ft_strncmp(&filename[len - 4], EXTENSION, 4) != 0)
 		return (perror("Argument must be a .ber map file"), FAILURE);
 	if (access(filename, F_OK) != 0)
@@ -47,7 +48,7 @@ static int		_checkarg(const char *filename)
 /* Read input file into buffer */
 void	get_map(char *tmp, int fd, t_app *app)
 {
-	int 	bytes;
+	int		bytes;
 	char	*buf;
 	char	*tmp2;
 
@@ -62,7 +63,7 @@ void	get_map(char *tmp, int fd, t_app *app)
 		{
 			free(buf);
 			close(fd);
-			err(RED"Aborted: map read buffer overflow"DEFAULT, app);
+			err(RED "Aborted: map read buffer overflow" DEFAULT, app);
 		}
 		else
 		{
@@ -76,14 +77,14 @@ void	get_map(char *tmp, int fd, t_app *app)
 	}
 	close(fd);
 	if (bytes < 0)
-		err(RED"Aborted: problem reading map file"DEFAULT, app);
+		err(RED "Aborted: problem reading map file" DEFAULT, app);
 }
 
 /* Get a string line from input file */
-int		get_line(int fd, char **buf)
+int	get_line(int fd, char **buf)
 {
-	int 	i;
-	int 	bytes;
+	int		i;
+	int		bytes;
 	int		bytes_read;
 	char	ch;
 
@@ -123,23 +124,23 @@ int		get_line(int fd, char **buf)
 void	parse_args(int argc, char **argv, t_app *app)
 {
 	int		fd;
-	char 	tmp[BUFSZ] = {0};
+	char	tmp[BUFSZ] = {0};
 
 	if (argc == 1)
-		err(RED"Aborted: Program requires an argument"DEFAULT, app);
+		err(RED "Aborted: Program requires an argument" DEFAULT, app);
 	if (argc != 2)
-		err(RED"Aborted: Program takes one argument only"DEFAULT, app);
-	if (_checkarg(argv[1]) ==  FAILURE)
-		err(RED"Aborted: Problem parsing .ber file"DEFAULT, app);
+		err(RED "Aborted: Program takes one argument only" DEFAULT, app);
+	if (_checkarg(argv[1]) == FAILURE)
+		err(RED "Aborted: Problem parsing .ber file" DEFAULT, app);
 	fd = open(argv[1], O_RDONLY);
 	if (-1 == fd)
-		err(RED"Aborted: Problem opening input file"DEFAULT, app);
+		err(RED "Aborted: Problem opening input file" DEFAULT, app);
 	get_map(tmp, fd, app);
 	app->map_grid = ft_split(tmp, '\n'); // _trimstr(tmp, '\n');
 	if (!app->map_grid)
-		err(RED"Aborted: malloc error"DEFAULT, app);
+		err(RED "Aborted: malloc error" DEFAULT, app);
 	app->width = ft_strlen(app->map_grid[0]);
 	app->height = arrlen(app->map_grid);
 	if (_check_map_square(app) == FAILURE)
-		err(RED"Aborted: map not square"DEFAULT, app);
+		err(RED "Aborted: map not square" DEFAULT, app);
 }

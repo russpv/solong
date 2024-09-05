@@ -1,18 +1,18 @@
 #include "solong.h"
 
-void	print_map(t_app*);
+void	print_map(t_app *);
 
 void	err(char *msg, t_app *app);
 size_t	arrlen(char **);
 void	init_struct(t_app *);
 int		get_player_direction(t_app *);
-int		on_a_loot(t_app*, t_pos);
-int		remove_loot(t_app*, int, int);
+int		on_a_loot(t_app *, t_pos);
+int		remove_loot(t_app *, int, int);
 
 size_t	arrlen(char **arr)
 {
-	size_t i;
-	
+	size_t	i;
+
 	i = 0;
 	if (!arr)
 		return (0);
@@ -24,7 +24,7 @@ size_t	arrlen(char **arr)
 /* Test function TODO delete */
 void	print_map(t_app *app)
 {
-	const char **ptr = (const char **)app->map_grid;
+	const char	**ptr = (const char **)app->map_grid;
 
 	if (!ptr)
 		return ;
@@ -44,8 +44,8 @@ void	err(char *msg, t_app *app)
 
 void	init_struct(t_app *app)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	i = -1;
 	while (++i < NUM_DIRECTIONS)
@@ -67,11 +67,11 @@ void	init_struct(t_app *app)
 	app->player_facing = right;
 }
 
-int		get_player_direction(t_app *app)
+int	get_player_direction(t_app *app)
 {
 	if (P_UP == app->map_grid[app->player.row][app->player.col])
 		return (up);
-	if (P_DOWN == app->map_grid[app->player.row][app->player.col])	
+	if (P_DOWN == app->map_grid[app->player.row][app->player.col])
 		return (down);
 	if (P_LEFT == app->map_grid[app->player.row][app->player.col])
 		return (left);
@@ -80,21 +80,22 @@ int		get_player_direction(t_app *app)
 	return (-1);
 }
 
-int		on_a_loot(t_app *app, t_pos pos)
+int	on_a_loot(t_app *app, t_pos pos)
 {
-	int i;
+	int	i;
 
 	i = -1;
 	while (++i < app->loots)
-		if (pos.row == app->loots_pos[i].row && pos.col == app->loots_pos[i].col)
+		if (pos.row == app->loots_pos[i].row
+			&& pos.col == app->loots_pos[i].col)
 			return (SUCCESS);
 	return (FAILURE);
 }
 
 /* Replaces valid loot position with out-of-bounds position and decrements counter */
-int		remove_loot(t_app *app, int row, int col)
+int	remove_loot(t_app *app, int row, int col)
 {
-	int i;
+	int	i;
 
 	i = -1;
 	while (++i < app->loots_size)
@@ -109,4 +110,3 @@ int		remove_loot(t_app *app, int row, int col)
 	}
 	return (FAILURE);
 }
-	

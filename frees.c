@@ -6,8 +6,8 @@ void	free_map_grid(char **);
 /* Exits if called prior to init_app */
 void	_free_sprites(t_app *app)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	if (!app->mlx_ptr)
 		return ;
@@ -50,7 +50,7 @@ void	cleanup(t_app *app)
 
 void	free_map_grid(char **arr)
 {
-	char **ptr;
+	char	**ptr;
 
 	ptr = arr;
 	if (ptr)
@@ -60,7 +60,6 @@ void	free_map_grid(char **arr)
 			free(*ptr);
 			ptr++;
 		}
-	free(arr);
+		free(arr);
 	}
 }
-
