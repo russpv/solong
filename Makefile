@@ -1,4 +1,4 @@
-NAME = solong
+NAME = so_long
 OUTPUT = executable
 
 SOURCES = main.c parse_args.c init_app.c check_paths.c render_map.c \
